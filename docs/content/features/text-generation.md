@@ -978,13 +978,13 @@ defaults *on* for dense models - so write the key only when you mean to override
 > will not work regardless of checkpoint format. `ngram` needs no draft weights
 > and is not subject to this limit.
 
-> **Format limit.** `mtp` and `dflash` require a **safetensors** target and are
-> rejected at load on a `.gguf` target, with:
-> `speculative decoding requires a safetensors target checkpoint`.
-> This is a current gap in the engine's GGUF loader, not a property of the GGUF
-> format - GGUF can carry MTP weights (llama.cpp reads them as `nextn.*`
-> tensors plus a `<arch>.nextn_predict_layers` key), but vllm.cpp's GGUF path
-> does not map them yet. `ngram` works fine on GGUF.
+> **Format support.** `mtp` and `dflash` now work from a `.gguf` target as well
+> as safetensors. An MTP head is read from the GGUF's `nextn.*` tensors when the
+> file declares `<arch>.nextn_predict_layers`; a GGUF exported WITHOUT the head
+> (converted with `--no-mtp`, or predating llama.cpp's Qwen3.5 MTP support) is
+> refused at load naming that as the reason. A DFlash draft may itself be a
+> `dflash`-arch GGUF, and the target may be a GGUF too. `ngram` needs no draft
+> weights and works on any format.
 
 **MTP** (Multi-Token Prediction) uses a draft head shipped inside the target
 checkpoint's own `mtp.*` tensors, so there is no second model to download. It
