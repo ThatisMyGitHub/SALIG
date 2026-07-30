@@ -56,6 +56,11 @@ endif
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Darwin)
 	LIB=libvllm.dylib
+	# Apple Clang diagnoses a pair of constant-folded array bounds in the Metal
+	# build as a GNU extension. vllm.cpp's global -Werror otherwise turns these
+	# warnings into a hard failure; keep them visible without failing the build.
+	CMAKE_ARGS+=-DCMAKE_CXX_FLAGS=-Wno-error=gnu-folding-constant
+	CMAKE_ARGS+=-DCMAKE_OBJCXX_FLAGS=-Wno-error=gnu-folding-constant
 else
 	LIB=libvllm.so
 endif
