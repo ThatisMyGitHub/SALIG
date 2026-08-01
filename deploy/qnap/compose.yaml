@@ -1,0 +1,60 @@
+name: salig-qnap
+
+services:
+  localai:
+    # Production and accepted test deployments must use an immutable image digest.
+    # Example: quay.io/go-skynet/local-ai@sha256:<approved-digest>
+    image: ${SALIG_LOCALAI_IMAGE:?Set SALIG_LOCALAI_IMAGE to an approved digest-pinned image}
+    container_name: salig-localai
+    restart: unless-stopped
+    init: true
+
+    env_file:
+      - .env
+
+    environment:
+      MODELS_PATH: /models
+      DEBUG: "false"
+      API_KEY: ${SALIG_API_KEY:?Set a gateway-only SALIG_API_KEY}
+      LOCALAI_DISABLE_AGENTS: "true"
+      LOCALAI_DISABLE_MCP: "true"
+
+    # Models and configuration are pre-provisioned and immutable at runtime.
+    volumes:
+      - ${SALIG_DATA_ROOT:?Set SALIG_DATA_ROOT}/models:/models:ro
+      - ${SALIG_DATA_ROOT:?Set SALIG_DATA_ROOT}/data:/data
+      - ./configuration:/configuration:ro
+
+    # Intentionally no `ports` section. LocalAI must not be published on the
+    # QNAP host. The SalutApp AI Gateway reaches port 8080 over the shared
+    # internal Docker network.
+    expose:
+      - "8080"
+
+    networks:
+      salig-internal:
+      salutapp-internal:
+        aliases:
+          - salig-localai
+
+    security_opt:
+      - no-new-privileges:true
+
+    cap_drop:
+      - ALL
+
+    pids_limit: ${SALIG_PIDS_LIMIT:-512}
+    mem_limit: ${SALIG_MEMORY_LIMIT:-12g}
+    cpus: ${SALIG_CPU_LIMIT:-4.0}
+
+    tmpfs:
+      - /tmp:size=${SALIG_TMPFS_SIZE:-1g},mode=1777
+
+    stop_grace_period: 60s
+
+networks:
+  salig-internal:
+    internal: true
+  salutapp-internal:
+    external: true
+    name: ${SALUTAPP_INTERNAL_NETWORK:-salutapp-app-internal}
