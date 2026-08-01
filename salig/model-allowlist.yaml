@@ -1,0 +1,32 @@
+version: 1
+policy:
+  default_action: deny
+  require_sha256: true
+  require_license_review: true
+  require_operation_binding: true
+  runtime_downloads_allowed: false
+
+# No model is approved by this initial commit.
+# Add entries only through a reviewed pull request after model, license,
+# checksum, resource and operation-specific validation.
+models: []
+
+# Required shape for a future approved entry:
+# models:
+#   - alias: salig-text-small
+#     status: approved
+#     source: <immutable source reference>
+#     filename: <model-file.gguf>
+#     sha256: <64 lowercase hexadecimal characters>
+#     license: <reviewed license identifier>
+#     backend: llama-cpp
+#     quantization: <for example Q4_K_M>
+#     maximum_context_tokens: 4096
+#     maximum_output_tokens: 512
+#     approved_operations:
+#       - summarize.selected_text@v1
+#     approved_environments:
+#       - qnap-poc
+#     approved_at: <YYYY-MM-DD>
+#     approved_by: <reviewer>
+#     notes: <limitations and test evidence>
