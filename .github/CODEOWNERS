@@ -1,0 +1,6 @@
+# SALIG-specific policy, deployment and integration changes require repository-owner review.
+/SALIG.md @ThatisMyGitHub
+/docs/salig/ @ThatisMyGitHub
+/salig/ @ThatisMyGitHub
+/deploy/qnap/ @ThatisMyGitHub
+/.github/CODEOWNERS @ThatisMyGitHub
