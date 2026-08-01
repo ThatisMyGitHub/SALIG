@@ -1,0 +1,6 @@
+.env
+*.secret
+*.key
+*.pem
+runtime/
+evidence/private/
