@@ -1,0 +1,65 @@
+---
+name: SALIG validation
+
+on:
+  pull_request:
+    branches:
+      - salig/integration
+  push:
+    branches:
+      - salig/integration
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: salig-validation-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  policy:
+    name: policy
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Check out the reviewed tree
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Confirm protected target
+        if: github.event_name == 'pull_request'
+        env:
+          SALIG_BASE_REF: ${{ github.base_ref }}
+        run: |
+          test "$SALIG_BASE_REF" = "salig/integration" || {
+            echo "::error::SALIG feature pull requests must target salig/integration"
+            exit 1
+          }
+
+      - name: Fetch governance refs
+        run: |
+          git fetch --no-tags origin \
+            +refs/heads/master:refs/remotes/origin/master \
+            +refs/heads/salig/integration:refs/remotes/origin/salig/integration
+
+      - name: Install pinned validation dependencies
+        run: |
+          python3 -m pip install \
+            --disable-pip-version-check \
+            --no-input \
+            --requirement scripts/requirements-salig-validation.txt
+
+      - name: Run baseline policy validation
+        run: |
+          scripts/salig-validate.sh \
+            --profile baseline \
+            --require-compose \
+            --require-git-governance
+
+      - name: Run policy regression tests
+        run: python3 -m unittest discover -s tests/salig-validation -p 'test_*.py' -v

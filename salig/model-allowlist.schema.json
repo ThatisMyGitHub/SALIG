@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://salutapp.care/schemas/salig/model-allowlist.schema.json",
+  "title": "SALIG model allowlist",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "policy", "models"],
+  "properties": {
+    "version": {"const": 1},
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "default_action",
+        "require_sha256",
+        "require_license_review",
+        "require_operation_binding",
+        "runtime_downloads_allowed"
+      ],
+      "properties": {
+        "default_action": {"const": "deny"},
+        "require_sha256": {"const": true},
+        "require_license_review": {"const": true},
+        "require_operation_binding": {"const": true},
+        "runtime_downloads_allowed": {"const": false}
+      }
+    },
+    "models": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/model"}
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "model": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "alias",
+        "status",
+        "source",
+        "filename",
+        "sha256",
+        "license",
+        "backend",
+        "quantization",
+        "maximum_context_tokens",
+        "maximum_output_tokens",
+        "approved_operations",
+        "approved_environments"
+      ],
+      "properties": {
+        "alias": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9._-]{2,63}$"
+        },
+        "status": {
+          "enum": ["candidate", "review", "approved", "rejected", "retired"]
+        },
+        "source": {"type": "string", "minLength": 1},
+        "filename": {
+          "type": "string",
+          "minLength": 1,
+          "not": {"pattern": "(^|/)(\\.\\.|~)(/|$)"}
+        },
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "license": {"type": "string", "minLength": 1},
+        "backend": {"type": "string", "minLength": 1},
+        "quantization": {"type": "string", "minLength": 1},
+        "maximum_context_tokens": {"type": "integer", "minimum": 1, "maximum": 131072},
+        "maximum_output_tokens": {"type": "integer", "minimum": 1, "maximum": 32768},
+        "approved_operations": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]+@v[1-9][0-9]*$"}
+        },
+        "approved_environments": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]+$"}
+        },
+        "approved_at": {"type": "string", "format": "date"},
+        "approved_by": {"type": "string", "minLength": 1},
+        "notes": {"type": "string"}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"status": {"const": "approved"}}, "required": ["status"]},
+          "then": {"required": ["approved_at", "approved_by"]}
+        }
+      ]
+    }
+  }
+}
