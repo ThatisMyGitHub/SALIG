@@ -1,0 +1,38 @@
+SALIG QNAP HARDWARE DISCOVERY PACKAGE
+PACKAGE_VERSION=1
+ACCESS_STATE=PREPARED_WITHOUT_QNAP_ACCESS
+RUNTIME_CHANGE=NONE
+MODEL_SELECTION=NONE
+DEPLOYMENT=NONE
+
+EXECUTION_ORDER:
+1. README.md
+2. SHA256SUMS
+3. collect-qnap-hardware.sh
+4. verify-qnap-hardware-evidence.sh
+5. REVIEW_TEMPLATE.md
+
+TRACKED_FILES:
+- .gitignore
+- README.md
+- MANIFEST.txt
+- SHA256SUMS
+- collect-qnap-hardware.sh
+- verify-qnap-hardware-evidence.sh
+- REVIEW_TEMPLATE.md
+- tests/salig-validation/test_hardware_discovery.py
+
+PRIVATE_OUTPUT_PATTERN:
+salig_qnap_hardware_discovery_YYYYMMDDTHHMMSSZ.txt
+
+PRIVATE_OUTPUT_POLICY:
+- must remain outside the Git repository
+- must not be committed
+- must be reviewed before transfer
+- must be accompanied by a SHA-256
+
+EXIT_GATE:
+- evidence structure verified
+- material gaps identified
+- review worksheet completed from proven evidence
+- Route A, Route B, or deferred decision recorded

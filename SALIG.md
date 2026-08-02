@@ -29,6 +29,7 @@ SALIG is not a generic chatbot over health records. It must not autonomously sel
 - `salig/baseline.env` — machine-readable upstream pin.
 - `salig/model-allowlist.yaml` — deny-by-default model approval registry.
 - `deploy/qnap/` — QNAP Container Station deployment scaffold.
+- `deploy/qnap/hardware-discovery/` — read-only host discovery, evidence verification and route-decision package prepared for execution when platform access becomes available.
 
 ## Status
 
