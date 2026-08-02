@@ -25,6 +25,7 @@ SALIG is not a generic chatbot over health records. It must not autonomously sel
 - `docs/salig/ARCHITECTURE.md` — system boundaries, components and data flow.
 - `docs/salig/SECURITY_POLICY.md` — mandatory security and model-governance controls.
 - `docs/salig/UPSTREAM_BASELINE.md` — exact LocalAI baseline and update process.
+- `docs/salig/VALIDATION.md` — local and CI policy validation profiles and controls.
 - `salig/baseline.env` — machine-readable upstream pin.
 - `salig/model-allowlist.yaml` — deny-by-default model approval registry.
 - `deploy/qnap/` — QNAP Container Station deployment scaffold.
